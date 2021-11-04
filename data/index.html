@@ -1,0 +1,122 @@
+<html>
+<h1>T-rex controls</h1>
+
+
+
+<button onclick="set_eye_color(100,0,0)">Red Eyes</button>
+<button onclick="set_eye_color(0,100,0)">Green Eyes</button>
+<button onclick="set_eye_color(0,0,100)">Blue Eyes</button><br />
+<form id="speak_form">
+Say:<input type="text" width="90" name="speak" id="speak" /><button type="submit">Submit</button>
+</form>
+<button onclick="speak('har,ha,ha')">laugh</button>
+<button onclick="speak('yes, of corse, you muppet')">yes</button>
+<button onclick="speak('no,no,no,no,nope')">no</button>
+<button onclick="speak('boo')">boo</button>
+<button onclick="speak('wror')">roar</button>
+<br />
+<select name="pat_phrases" id="pat_phrases">
+    <option value="">(silent)</option>
+    <option value="Has anyone seen my beautiful body anywhere?">Where's body?</option>
+    <option value="My dental bills are horrible">Dental bills</option>
+    <option value="Did anyone see that amazing bright comet in the sky last night?">Comet</option>
+    <option value="You humans are impossible.taystee yes.but still impossible">Tasty</option>
+    <option value="How humans can eat pumpkin vegetable I will never understand">Pumpkin</option>
+    <option value="who are you calling cretayshios!">cretacious</option>
+    <option value="ayem so hungree my stumak thinks my throwts been cut!">hungry</option>
+    <option value="Hornted? hooz hornted">Haunted</option>
+    <option value="Hapee haloween">Happy halloween</option>
+    <option value="Am I the only won terrified of spiders?">Spiders</option>
+    <option value="I luv marsden. I love sheep">Marsden</option>
+    <option value="bring me all the beer, now">Beer</option>
+    <option value="Minez a golden ale">Order beer</option>
+    <option value="No more for the humans. They have drunk enuf">Drunk enough</option>
+    <option value=""></option>
+    <option value=""></option>
+    <option value=""></option>
+</select>
+
+
+
+<script>
+    speaking=false;
+    phrase_queue=[];
+    function reqListener ()
+    {
+        console.log(this.responseText);
+        speaking=false;
+    }
+    function set_eye_color(r,g,b)
+    {
+        var url="/set_eye_color?red="+r+"&green="+g+"&blue="+b;
+        console.log("URL:"+url)
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", reqListener);
+        oReq.open("GET", url);
+        oReq.send();
+    }
+    function speak_from_queue()
+    {
+        if (phrase_queue.length==0) return; // Queue empty
+        if (speaking) return; //Still speaking
+        speaking=true; // Flag we've started speaking, gets reset by response to request
+        raw=phrase_queue.shift();// grab the oldest thing in the queue
+        var url="/speak?message="+raw;
+        console.log("URL:"+url)
+        var oReq = new XMLHttpRequest();
+        oReq.addEventListener("load", reqListener);
+        oReq.open("GET", url);
+        oReq.send();
+        
+    }
+    function speak(message)
+    {
+        
+        var rawbits=message.split(".");
+        //console.log("About to say: "+raw);
+        for (i=0;i<rawbits.length;i++)
+        {
+            raw=rawbits[i];
+            if (raw.length>0)
+            {
+                if (raw.slice(raw.length=1)!=".")
+                {
+                    raw=raw+".";
+                }
+                phrase_queue.push(raw);
+            }
+
+        }
+        
+    }
+    function speak_from_form()
+    {
+        raw=document.getElementById("speak").value;
+        speak(raw);
+    }
+
+    speak_form=document.getElementById("speak_form");
+    speak_form.addEventListener("submit",
+        function(event)
+        {
+            event.preventDefault();
+            //window.history.back();
+            speak_from_form();
+            return false;
+        },
+        true);
+    phrase_selector=document.getElementById("pat_phrases");
+    phrase_selector.addEventListener("change",
+        function(event)
+        {
+            console.log(event);
+            console.log(event.target.value);
+            speak(event.target.value);
+        },
+        true);
+    setInterval(function(){speak_from_queue()},300);
+    console.log("Script init completed");
+</script>
+
+
+</html>
