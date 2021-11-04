@@ -8,7 +8,7 @@
 //
 
 #include <Arduino.h>
-
+#include "credentials.h"
 #include <WiFi.h>
 #include <SPIFFS.h>
 #include <HTTPClient.h>
@@ -62,12 +62,6 @@ int pos=0;
 
 AsyncWebServer server(80);
 
-// const char* ssid = "Edmob";
-// const char* password = "hgohgohgo";
-const char* home_ssid = "spotlessman";
-const char* home_password = "asurplusof99turnips";
-const char* tethered_ssid = "Edmob";
-const char* tethered_password = "hgohgohgo";
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_RGB + NEO_KHZ800);
 
